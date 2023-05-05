@@ -16,9 +16,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const redis_1 = __importDefault(require("redis"));
 const http_1 = __importDefault(require("http"));
+const os_1 = __importDefault(require("os"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const path_1 = __importDefault(require("path"));
 const ws_1 = __importDefault(require("ws"));
+const mediasoup_1 = __importDefault(require("mediasoup"));
+const env_1 = __importDefault(require("./env"));
 // TODO: these are temporary. Move them to other files afterwards
 const logger = console;
 const config = {
@@ -26,11 +29,21 @@ const config = {
     staticFilesCachePeriod: 60 * 100,
     listeningPort: 3000,
     mediasoup: {
+        numWorkers: Object.keys(os_1.default.cpus()).length,
+        logLevel: env_1.default.MEDIASOUP_LOG_LEVEL || 'warn',
         worker: {
-            logLevel: "warn",
-            logTags: null
-        }
-    }
+            logTags: [
+                'info',
+                'ice',
+                'dtls',
+                'rtp',
+                'srtp',
+                'rtcp',
+            ],
+            rtcMinPort: env_1.default.MEDIASOUP_MIN_PORT || 10000,
+            rtcMaxPort: env_1.default.MEDIASOUP_MAX_PORT || 10100,
+        },
+    },
 };
 let redisClient;
 let mediasoupWorkers = new Map();
@@ -82,7 +95,7 @@ catch (err) {
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         runHTTPserver();
-        runWebsocket();
+        yield runWebsocket();
         runMediasoupWorker();
     });
 }
@@ -132,6 +145,13 @@ function runWebsocket() {
  * Launch mediasoup workers as specified in configuration file.
  */
 function runMediasoupWorker() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const worker = yield mediasoup_1.default.createWorker(config.mediasoup.worker);
+        worker.on('died', () => {
+            logger.error('mediasoup worker died, exiting in 2 seconds... [pid:%d]', worker.pid);
+            setTimeout(() => process.exit(1), 2000);
+        });
+    });
 }
 main();
 console.log();

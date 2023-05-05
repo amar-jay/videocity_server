@@ -2,11 +2,16 @@
 import express, {Express} from 'express';
 import redis from 'redis';
 import http from 'http';
+import os from 'os';
 import AwaitQueue from 'awaitqueue';
 import bodyParser from 'body-parser';
 import compression from "compression";
 import path from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
+import mediasoup from 'mediasoup';
+import { WorkerSettings } from 'mediasoup/node/lib/Worker';
+import { AppData } from 'mediasoup/node/lib/types';
+import env from './env';
 
 // TODO: these are temporary. Move them to other files afterwards
 const logger = console
@@ -14,15 +19,26 @@ const config = {
     redisOptions: {},
     staticFilesCachePeriod: 60 * 100,
     listeningPort: 3000,
+
     mediasoup: {
+        numWorkers: Object.keys(os.cpus()).length,
+        logLevel : env.MEDIASOUP_LOG_LEVEL || 'warn',
         worker: {
-            logLevel: "warn",
-            logTags: null
-        }
-    }
+            logTags: [
+                'info',
+                'ice',
+                'dtls',
+                'rtp',
+                'srtp',
+                'rtcp',
+            ],
+            rtcMinPort: env.MEDIASOUP_MIN_PORT || 10000,
+            rtcMaxPort: env.MEDIASOUP_MAX_PORT || 10100,
+        } as WorkerSettings<AppData>,
+    } ,
 
 
-};
+} as const;
 
 let redisClient: ReturnType<typeof redis.createClient>;
 let mediasoupWorkers = new Map();
@@ -82,7 +98,7 @@ try {
 async function main() {
 
     runHTTPserver();
-    runWebsocket();
+    await runWebsocket();
     runMediasoupWorker();
 
 }
@@ -140,7 +156,13 @@ function runWebsocket() {
 /**
  * Launch mediasoup workers as specified in configuration file.
  */
-function runMediasoupWorker() {
+async function runMediasoupWorker() {
+    const worker = await mediasoup.createWorker(config.mediasoup.worker);
+
+    worker.on('died', () => {
+        logger.error('mediasoup worker died, exiting in 2 seconds... [pid:%d]', worker.pid);
+        setTimeout(() => process.exit(1), 2000);
+    });
 }
 
 main();
