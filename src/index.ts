@@ -1,10 +1,12 @@
 #!/usr/bin/env node
-import express, {Express} from 'express'
-import redis from 'redis'
+import express, {Express} from 'express';
+import redis from 'redis';
+import http from 'http';
 import AwaitQueue from 'awaitqueue';
 import bodyParser from 'body-parser';
 import compression from "compression";
 import path from 'path';
+import WebSocket, { WebSocketServer } from 'ws';
 
 // TODO: these are temporary. Move them to other files afterwards
 const logger = console
@@ -26,6 +28,8 @@ let redisClient: ReturnType<typeof redis.createClient>;
 let mediasoupWorkers = new Map();
 let rooms = new Map();
 let app: Express;
+let server: http.Server;
+let socket: WebSocketServer;
 let configError: any; // temporary
 
 // a map of peers indexed by ids
@@ -51,6 +55,21 @@ function init() {
 //         throw "failed to create redis client"
      }
      app = express();
+     server = http.createServer(app);
+     socket = new WebSocket.Server({
+            server,
+            path: '/ws',
+     });
+
+     socket.on('error', (err) => {
+            logger.error('error in socket: ', err);
+        }
+        );
+    socket.on('died', () => {
+            logger.error('died in socket');
+    });
+     
+      
 }
 
 try {
@@ -87,7 +106,7 @@ function runHTTPserver() {
     }))
 
     app.use((_, res) => {
-        res.send(
+        res.status(404).send(
             `<h1>🏗️ Still in production</h1>
             <p>If you report this error, please also report this 
             <i>tracking ID</i> which makes it possible to locate your session
@@ -96,14 +115,26 @@ function runHTTPserver() {
             </p>`
         );
     })
-    logger.log("Server running on :", config.listeningPort)
-    app.listen(config.listeningPort)
+    server.listen(config.listeningPort, () => {
+        logger.log("Server running on :", config.listeningPort)
+    })
 }
 
 /**
  * create a websocket to allow websocker connection from browsers.
  */
 function runWebsocket() {
+    socket.on('connection', (ws, req) => {
+                logger.log("new connection from " + req.socket.remoteAddress);
+                ws.on('message', (message) => {
+                    logger.log("received message: " + message);
+                });
+                ws.on('close', () => {
+                    logger.log("connection closed");
+                });
+                ws.send('something');
+            }
+            );
 }
 
 /**

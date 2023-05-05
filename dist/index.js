@@ -36,6 +36,7 @@ let redisClient;
 let mediasoupWorkers = new Map();
 let rooms = new Map();
 let app;
+let server;
 let socket;
 let configError; // temporary
 // a map of peers indexed by ids
@@ -59,10 +60,16 @@ function init() {
         //         throw "failed to create redis client"
     }
     app = (0, express_1.default)();
-    const server = http_1.default.createServer(app);
+    server = http_1.default.createServer(app);
     socket = new ws_1.default.Server({
-        server: server,
+        server,
         path: '/ws',
+    });
+    socket.on('error', (err) => {
+        logger.error('error in socket: ', err);
+    });
+    socket.on('died', () => {
+        logger.error('died in socket');
     });
 }
 try {
@@ -95,22 +102,23 @@ function runHTTPserver() {
         maxAge: config.staticFilesCachePeriod,
     }));
     app.use((_, res) => {
-        res.send(`<h1>🏗️ Still in production</h1>
+        res.status(404).send(`<h1>🏗️ Still in production</h1>
             <p>If you report this error, please also report this 
             <i>tracking ID</i> which makes it possible to locate your session
             in the logs which are available to the system administrator: 
                 <b></b>
             </p>`);
     });
-    logger.log("Server running on :", config.listeningPort);
-    app.listen(config.listeningPort);
+    server.listen(config.listeningPort, () => {
+        logger.log("Server running on :", config.listeningPort);
+    });
 }
 /**
  * create a websocket to allow websocker connection from browsers.
  */
 function runWebsocket() {
     socket.on('connection', (ws, req) => {
-        logger.log("new connection from " + req.connection.remoteAddress);
+        logger.log("new connection from " + req.socket.remoteAddress);
         ws.on('message', (message) => {
             logger.log("received message: " + message);
         });
