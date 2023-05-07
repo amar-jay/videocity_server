@@ -2,27 +2,22 @@
 import express, {Express} from 'express';
 import redis from 'redis';
 import http from 'http';
+import os from 'os';
 import AwaitQueue from 'awaitqueue';
 import bodyParser from 'body-parser';
 import compression from "compression";
 import path from 'path';
 import WebSocket, { WebSocketServer } from 'ws';
-
-// TODO: these are temporary. Move them to other files afterwards
-const logger = console
-const config = {
-    redisOptions: {},
-    staticFilesCachePeriod: 60 * 100,
-    listeningPort: 3000,
-    mediasoup: {
-        worker: {
-            logLevel: "warn",
-            logTags: null
-        }
-    }
+import * as mediasoup from 'mediasoup';
+import { WorkerSettings } from 'mediasoup/node/lib/Worker';
+import { AppData } from 'mediasoup/node/lib/types';
+import env from './env';
+import { config } from './lib/config';
+import { logger } from './lib/logger';
+import { runMediasoupWorker } from './lib/worker';
+import { runWebsocket } from './lib/ws';
 
 
-};
 
 let redisClient: ReturnType<typeof redis.createClient>;
 let mediasoupWorkers = new Map();
@@ -44,6 +39,7 @@ function init() {
     logger.log('- process.env.DEBUG: ', process.env?.DEBUG || true)
     logger.log('- config.mediasoup.worker.logLevel:', config.mediasoup.worker.logLevel);
     logger.log('- config.mediasoup.worker.logTags:', config.mediasoup.worker.logTags);
+    logger.log('- config.mediasoup.version:', mediasoup.version);
 
     // config files check
     if (!!configError) {
@@ -82,7 +78,7 @@ try {
 async function main() {
 
     runHTTPserver();
-    runWebsocket();
+    await runWebsocket(socket);
     runMediasoupWorker();
 
 }
@@ -120,28 +116,8 @@ function runHTTPserver() {
     })
 }
 
-/**
- * create a websocket to allow websocker connection from browsers.
- */
-function runWebsocket() {
-    socket.on('connection', (ws, req) => {
-                logger.log("new connection from " + req.socket.remoteAddress);
-                ws.on('message', (message) => {
-                    logger.log("received message: " + message);
-                });
-                ws.on('close', () => {
-                    logger.log("connection closed");
-                });
-                ws.send('something');
-            }
-            );
-}
 
-/**
- * Launch mediasoup workers as specified in configuration file.
- */
-function runMediasoupWorker() {
-}
+
 
 main();
 console.log()
