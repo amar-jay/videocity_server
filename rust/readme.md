@@ -1,0 +1,2 @@
+I wanted to try that of rust. But the only good example was [this](https://github.com/mojtaba-motevali/Media-server) which by the way is made by some egoistic dude with nothing worthy of his name. Rather than 
+complicating simple stuff. I am not a rust expert, but what this guy did was suicide. Killing his own inventions to satiate his ego. So btw if you are reading this. *Just Note:* There is nothing worthy out here.

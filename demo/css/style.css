@@ -1,0 +1,13 @@
+:root {
+	--color: #ccc;
+	--bg-color: #111;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	color: #ccc
+}

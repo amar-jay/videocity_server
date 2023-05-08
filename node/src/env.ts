@@ -17,6 +17,7 @@ const envSchema = zod.object({
 	  MEDIASOUP_NUM_WORKERS: zod.string().default('1'),
 	  MEDIASOUP_WORKER_BIN: zod.string().default('node_modules/mediasoup/bin/mediasoup-worker'),
 	  MEDIASOUP_ROUTER_BIN: zod.string().default('node_modules/mediasoup/bin/mediasoup-router'),
+	  MEDIASOUP_ANNOUNCED_IP: zod.string().ip().min(7).max(15).default('127.0.0.1'),
 
 });
 
