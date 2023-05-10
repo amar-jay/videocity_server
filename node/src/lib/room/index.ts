@@ -2,7 +2,7 @@ import logger from "../logger";
 import { EventEmitter } from "events";
 import config from "../config";
 import { AwaitQueue } from "awaitqueue";
-import { nanoid } from "nanoid";
+import { v4 as uuid } from "uuid";
 import handlers from "./handlers";
 import type {
   RoomParameters,
@@ -11,6 +11,7 @@ import type {
   Routers,
 } from "@/types/room";
 import type { Peer } from "@/lib/peer";
+import { types } from "mediasoup";
 
 const { mediaCodecs } = config.mediasoup.router;
 export class Room extends EventEmitter {
@@ -46,10 +47,11 @@ export class Room extends EventEmitter {
     audioObservers,
     mediasoupWorkers,
     peers,
+    consumerReplicas,
   }: RoomParameters) {
     logger.log('Room constructor() [roomId:"%s"]', roomId);
     super();
-    this._id = nanoid(); // TODO: generate room id
+    this._id = uuid(); // TODO: generate room id
     this._roomId = roomId;
     this._locked = false;
     this._closed = false;
@@ -63,7 +65,8 @@ export class Room extends EventEmitter {
 
   // create room and returns instance of Room
   static async create({
-    mediasoupWorkers,
+    mediasoupWorker: worker,
+    consumerReplicas,
     roomId,
     peers,
   }: RoomCreateParameters): Promise<Room> {
@@ -73,7 +76,7 @@ export class Room extends EventEmitter {
     let audioObservers: AudioObservers = new Map(); // TODO: create audio level observer class
     // let audioLevelObservers: types.AudioLevelObserver[] = []; //TODO: create audio level observer class
 
-    for (const worker of mediasoupWorkers.values()) {
+      // Creating only one router per worker since there is no need for multiple
       const router = await worker.createRouter({ mediaCodecs });
       routers.set(router.id, router);
 
@@ -85,13 +88,15 @@ export class Room extends EventEmitter {
         volume: -1000,
         peerId: null,
       });
-    }
+
+      const activeSpeakerObserver = await router.createActiveSpeakerObserver();
+
     return new Room({
       roomId,
-      mediasoupWorkers,
-      peers,
+      webrtcServer: worker.appData.webRtcServer as types.WebRtcServer,
       routers,
       audioObservers,
+      consumerReplicas,
     });
   }
   // join room
@@ -185,4 +190,8 @@ export class Room extends EventEmitter {
   isLocked() {
     return this._locked;
   }
+
+  //----
+  // createRoom({roomID})
+
 }

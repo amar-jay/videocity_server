@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import logger from "../logger";
-import { nanoid } from "nanoid";
 import { WebSocket } from "ws";
+import { v4 as uuid } from "uuid";
 import { types } from "mediasoup";
 import { Role, Peer as IPeer } from "@/types/room";
 
@@ -30,7 +30,7 @@ export class Peer extends EventEmitter implements IPeer {
     logger.log("Peer constructor() [peerId:" + id + "]");
     super();
     this.closed = false;
-    this.id = nanoid();
+    this.id = uuid();
     // this.authId = id; // not necessary
     this.roles = [];
     this.socket = socket;

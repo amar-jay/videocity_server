@@ -97,7 +97,7 @@ export const config = {
           ip: env.MEDIASOUP_LISTEN_IP || "0.0.0.0",
           announcedIp: env.MEDIASOUP_ANNOUNCED_IP, // this is the public IP address
         },
-      ] as (WebRtcServerListenInfo & {port: number})[],
+      ] as (WebRtcServerListenInfo & { port: number })[],
       //satisfies WebRtcTransportListen[] ,
     },
 
@@ -111,7 +111,6 @@ export const config = {
     } as const,
   },
 };
-
 
 export const events = {
   GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",

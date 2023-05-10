@@ -10,26 +10,29 @@ export interface Role {
 }
 export interface Peer {
   id: string;
-  displayName: string;
-  email: string;
-  roles: unknown[];
-  isClosed: boolean;
+  displayName?: string;
+  email?: string;
+  roles?: unknown[];
   roomId: string;
   socket: WebSocket;
-  rtpCapabilities: types.RtpCapabilities;
+  rtpCapabilities?: types.RtpCapabilities;
 }
 export type RoomParameters = {
   roomId: RoomId;
   routers: Routers;
   audioObservers: AudioObservers;
-  mediasoupWorkers: types.Worker[];
-  peers: Map<string, Peer>;
+  mediasoupWorkers?: types.Worker[];
+  peers?: Map<string, Peer>;
+  webrtcServer?: types.WebRtcServer;
+  consumerReplicas: number;
 };
 
-export type RoomCreateParameters = Omit<
-  RoomParameters,
-  "routers" | "audioObservers"
->;
+export type RoomCreateParameters = {
+  roomId: RoomId;
+  mediasoupWorker: types.Worker;
+  consumerReplicas: number;
+  peers?: Map<string, Peer>;
+};
 export type Routers = Map<string, types.Router>;
 export type AudioObservers = Map<
   string,

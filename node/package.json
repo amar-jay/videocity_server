@@ -9,6 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier ./src/**/* --write",
     "tsc": "tsc --noEmit --pretty",
+    "tsc:watch": "tsc --watch",
     "check": "npm run tsc && npm run format"
   },
   "keywords": [],
@@ -26,6 +27,7 @@
   },
   "dependencies": {
     "@types/compression": "^1.7.2",
+    "@types/uuid": "^9.0.1",
     "awaitqueue": "^3.0.1",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
@@ -39,6 +41,7 @@
     "prisma": "^4.13.0",
     "pusher": "^5.1.3",
     "redis": "^4.6.6",
+    "uuid": "^9.0.0",
     "ws": "^8.13.0",
     "zod": "^3.21.4"
   }

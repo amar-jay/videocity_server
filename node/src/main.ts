@@ -1,16 +1,11 @@
 import express, { Express } from "express";
 import redis from "redis";
 import http from "http";
-import os from "os";
-import AwaitQueue from "awaitqueue";
 import bodyParser from "body-parser";
-import compression from "compression";
 import path from "path";
 import WebSocket, { WebSocketServer } from "ws";
 import * as mediasoup from "mediasoup";
-import { WorkerSettings } from "mediasoup/node/lib/Worker";
-import { AppData } from "mediasoup/node/lib/types";
-import env from "./env";
+import { isDev } from "./env";
 import { config } from "./lib/config";
 import { logger } from "./lib/logger";
 import { startMediasoup } from "./lib/worker";
@@ -32,7 +27,7 @@ function init() {
     throw "Node version is " + process.versions.node + ". NodeJS 15+ only";
   }
 
-  logger.log("- process.env.DEBUG: ", process.env?.DEBUG || true);
+  logger.log("- process.env.DEBUG: ", isDev);
   logger.log(
     "- config.mediasoup.worker.logLevel:",
     config.mediasoup.worker.logLevel
@@ -104,22 +99,22 @@ function runHTTPserver() {
     );
   });
   server.listen(config.listeningPort, () => {
-    logger.log("Server running on :", config.listeningPort);
+    logger.log("server running on :", config.listeningPort);
   });
 }
 
 export async function main() {
   runHTTPserver();
   startMediasoup()
-    .then((worker) => {
+    .then((workers) => {
       logger.log("mediasoup worker started");
       // TODO: pass worker to runWebsocket
       runWebsocket(socket);
     })
     .then(() => {
-      logger.log("websocket server started");
+      logger.log("websocket server started\n");
     })
     .catch((err) => {
-      logger.error("mediasoup worker failed to start: " + err);
+      logger.error("ERROR: mediasoup worker failed to start: " + err);
     });
 }
