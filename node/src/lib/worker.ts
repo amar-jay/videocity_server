@@ -3,7 +3,7 @@ import { config } from "./config";
 import logger from "./logger";
 import { set } from "zod";
 import { clone } from "./utils";
-import { workerData } from "worker_threads";
+//import { workerData } from "worker_threads";
 
 let mediasoupWorkers: {
   worker: mediasoup.types.Worker;
@@ -41,21 +41,21 @@ export async function startMediasoup(): Promise<typeof mediasoupWorkers> {
   );
 
   mediasoup.observer.on("newworker", (worker) => {
-    logger.log("new worker created [worket.pid:%d]", worker.pid);
+    logger.log("new worker created [worket.pid: %d]", worker.pid);
 
     worker.observer.on("close", () => {
-      logger.log("worker closed [worker.pid:%d]", worker.pid);
+      logger.log("worker closed [worker.pid: %d]", worker.pid);
     });
 
     worker.observer.on("newrouter", (router) => {
       logger.log(
-        "new router created [worker.pid:%d, router.id:%s]",
+        "new router created [worker.pid: %d, router.id:%s]",
         worker.pid,
         router.id
       );
       worker.observer.on("close", () => {
         logger.log(
-          "router closed [worker.pid:%d, router.pid:%d]",
+          "router closed [worker.pid: %d, router.pid: %d]",
           worker.pid,
           router.id
         );
@@ -64,7 +64,6 @@ export async function startMediasoup(): Promise<typeof mediasoupWorkers> {
   });
 
   // logger.log('- mediasoup rtpCapabilities:', rtpCapabilities);
-  logger.log("Mediasoup: creating %d workers...", config.mediasoup.numWorkers);
   const {
     webRtcTransport: webRtcTransportOptions,
     webRtcServer: webRtcServerOptions,
@@ -72,17 +71,13 @@ export async function startMediasoup(): Promise<typeof mediasoupWorkers> {
   const { logLevel, logTags, rtcMinPort, rtcMaxPort } = config.mediasoup.worker;
   const { mediaCodecs } = config.mediasoup.router;
 
+  logger.log("Mediasoup: creating %d workers...", config.mediasoup.numWorkers);
   for (let i = 0; i < numWorkers; i++) {
-    const worker = await mediasoup.createWorker({
-      logLevel,
-      logTags,
-      rtcMinPort,
-      rtcMaxPort,
-    });
+    const worker = await mediasoup.createWorker(config.mediasoup.worker);
 
     worker.on("died", () => {
       logger.error(
-        "mediasoup worker died, exiting in 2 seconds... [pid:%d]",
+        "mediasoup worker died, exiting in 2 seconds... [pid: %d]",
         worker.pid
       );
       setTimeout(() => process.exit(1), 2000);
@@ -94,19 +89,27 @@ export async function startMediasoup(): Promise<typeof mediasoupWorkers> {
     //TODO: Create Webrtc Server in this worker
     // So each have its own independent port
     const serverOptions = clone(webRtcServerOptions);
+    serverOptions.listenInfos = serverOptions.listenInfos.map((listenInfo) => {
+        listenInfo.port = listenInfo.port + i;
+        return listenInfo;
+    });
     // TODO: Set port
-    const server = await worker.createWebRtcServer(serverOptions);
-    workerData.AppData.server = server;
+    await worker.createWebRtcServer(serverOptions)
+    .then((server) => {
+        logger.log("WebRtcServer created [worker.pid: %d, server.id: %s]", worker.pid, server.id);
+        worker.appData.server = server;
+    })
 
     // TODO: Log resource usage
     setInterval(async () => {
       const usage = await worker.getResourceUsage();
       logger.info(
-        "mediasoup worker resource usage [pid:%d]: %o",
+        "mediasoup worker resource usage [pid: %d]: %o",
         worker.pid,
         usage
       );
     }, 60 * 60 * 24); // every 24 hours
+
   }
 
   return mediasoupWorkers;

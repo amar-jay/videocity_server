@@ -1,7 +1,7 @@
 import WebSocket, { RawData } from "ws";
 import logger from "./logger";
 import { networkInterfaces } from "os";
-import { isProd } from "@/env";
+import { isProd } from "../env";
 import { types } from "mediasoup";
 
 /**

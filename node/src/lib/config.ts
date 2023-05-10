@@ -97,9 +97,9 @@ export const config = {
           ip: env.MEDIASOUP_LISTEN_IP || "0.0.0.0",
           announcedIp: env.MEDIASOUP_ANNOUNCED_IP, // this is the public IP address
         },
-      ] as WebRtcServerListenInfo[],
+      ] as (WebRtcServerListenInfo & {port: number})[],
       //satisfies WebRtcTransportListen[] ,
-    } as const,
+    },
 
     // config og transport for RTP and Gstreamer
     plainTransport: {
@@ -110,7 +110,8 @@ export const config = {
       maxSctpMessageSize: 262144,
     } as const,
   },
-} as const;
+};
+
 
 export const events = {
   GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",
