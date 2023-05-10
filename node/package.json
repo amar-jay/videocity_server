@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsc && node ./dist/",
-    "start": "tsc && node ./dist/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && npm run format && node ./dist/",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier ./src/**/* --write",
+    "tsc": "tsc --noEmit --pretty"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,7 @@
     "@types/node": "^18.16.3",
     "@types/ws": "^8.5.4",
     "nodemon": "^2.0.22",
+    "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
@@ -30,6 +33,7 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "mediasoup": "^3.11.24",
+    "nanoid": "^4.0.2",
     "passport": "^0.6.0",
     "prisma": "^4.13.0",
     "pusher": "^5.1.3",
