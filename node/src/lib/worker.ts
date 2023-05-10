@@ -93,9 +93,9 @@ export async function startMediasoup(): Promise<typeof mediasoupWorkers> {
 
     //TODO: Create Webrtc Server in this worker
     // So each have its own independent port
-    const serverOptions = clone(undefined, webRtcServerOptions);
+    const serverOptions = clone(webRtcServerOptions);
     // TODO: Set port
-    const server = await worker.createWebRtcServer(serverOptions!);
+    const server = await worker.createWebRtcServer(serverOptions);
     workerData.AppData.server = server;
 
     // TODO: Log resource usage

@@ -1,5 +1,8 @@
 import WebSocket, { RawData } from "ws";
 import logger from "./logger";
+import { networkInterfaces } from "os";
+import { isProd } from "@/env";
+import { types } from "mediasoup";
 
 /**
  * Check if the given data is valid JSON.
@@ -48,6 +51,39 @@ export const sendError = (error: string, ws: WebSocket) => {
 /**
  * Clone an object efficiently else returns default value.
  */
-export const clone = <T, V>(obj: T, defaultValue: V): T | V => {
-  return obj ? JSON.parse(JSON.stringify(obj)) : defaultValue;
+export const clone = <T, V>(obj: T, defaultValue?: V): T => {
+  if (obj !== undefined && obj !== null) return JSON.parse(JSON.stringify(obj));
+  if (defaultValue !== undefined && defaultValue !== null)
+    return JSON.parse(JSON.stringify(defaultValue));
+
+  throw logger.error("clone: invalid defaultValue: " + defaultValue);
 };
+
+/***
+ * Incredible hack to get all possible ip addresses of the machine.
+ *
+ */
+// add automatic IP detection
+const ifaceWhiteListRegex = "^(eth.*)|(enp.*)|(ens.*)|(br.*)|(wl.*)|(ww.*)";
+export function getListenIps(): types.TransportListenIp[] {
+  const listenIP: types.TransportListenIp[] = [];
+  const ifaces = networkInterfaces();
+
+  Object.keys(ifaces).forEach(function (ifname) {
+    if (ifname.match(ifaceWhiteListRegex)) {
+      ifaces[ifname]?.forEach(function (iface) {
+        if (
+          (iface.family !== "IPv4" &&
+            (iface.family !== "IPv6" || iface.scopeid !== 0)) ||
+          (isProd && iface.internal !== false)
+        ) {
+          // skip over internal (i.e. 127.0.0.1) and non-ipv4 or ipv6 non global addresses
+          return;
+        }
+        listenIP.push({ ip: iface.address, announcedIp: undefined });
+      });
+    }
+  });
+
+  return listenIP;
+}

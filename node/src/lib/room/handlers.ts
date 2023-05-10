@@ -1,6 +1,16 @@
-import type { Peer } from "./types";
+// import type { Peer } from "../../types/types";
+import { WebSocket } from "ws";
 
-function joinPeer(peer: Peer) {}
+import { Peer } from "../peer";
+import logger from "../logger";
+
+function joinPeer(peer: Peer, allowed?: boolean) {
+  if (!allowed) {
+    logger.log('Room._joinPeer() | peer not allowed [peerId:"%s"]', peer.id);
+    return;
+  }
+  // TODO: handle returning peer and the rest of the function
+}
 
 function handleGuestPeer({ peer }: { peer: Peer }) {
   // TODO: handle guest peer
@@ -19,8 +29,12 @@ function createConsumer() {
   // TODO: create consumer
 }
 
-function handleNotification() {
+function handleNotification(ws: WebSocket, notification: string) {
   // TODO: handle notification
+}
+
+function handleRoomOverLimit(peer: Peer) {
+  handleNotification(peer.socket, "roomOverLimit");
 }
 
 export default {
@@ -30,4 +44,5 @@ export default {
   handlePeerRequest,
   createConsumer,
   handleNotification,
+  handleRoomOverLimit,
 };

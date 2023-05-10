@@ -1,17 +1,29 @@
+import { Room } from "@/lib/room";
 import { types } from "mediasoup";
+import { WebSocket } from "ws";
 
 export type RoomId = string;
 
-export type Peer = {
+export interface Role {
   id: string;
+  name: "admin" | "guest" | "moderator";
+}
+export interface Peer {
+  id: string;
+  displayName: string;
+  email: string;
   roles: unknown[];
-};
+  isClosed: boolean;
+  roomId: string;
+  socket: WebSocket;
+  rtpCapabilities: types.RtpCapabilities;
+}
 export type RoomParameters = {
   roomId: RoomId;
   routers: Routers;
   audioObservers: AudioObservers;
   mediasoupWorkers: types.Worker[];
-  peers: Map<string, unknown>; // TODO: set type
+  peers: Map<string, Peer>;
 };
 
 export type RoomCreateParameters = Omit<

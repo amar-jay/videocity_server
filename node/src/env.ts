@@ -1,5 +1,8 @@
 import zod from "zod";
+import os from "os";
 
+const listenIP = os.networkInterfaces().en0?.[0]?.address || "172.16.5.4";
+console.log("DEBUG: " , os.networkInterfaces());
 const envSchema = zod.object({
   NODE_ENV: zod
     .enum(["development", "production", "test"])
@@ -11,7 +14,7 @@ const envSchema = zod.object({
   REDIS_DB: zod.string().default("0"),
   REDIS_TLS: zod.boolean().default(false),
 
-  MEDIASOUP_LISTEN_IP: zod.string().default("5000"),
+  MEDIASOUP_LISTEN_IP: zod.string().default(listenIP),
   MEDIASOUP_MIN_PORT: zod.string().default("10000"),
   MEDIASOUP_MAX_PORT: zod.string().default("10100"),
   MEDIASOUP_LOG_LEVEL: zod

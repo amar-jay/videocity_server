@@ -10,11 +10,13 @@ import {
   WebRtcServerListenInfo,
 } from "mediasoup/node/lib/types";
 import os from "os";
+import { getListenIps } from "./utils";
 
 export const config = {
   redisOptions: {},
   staticFilesCachePeriod: 60 * 100,
   listeningPort: 3000,
+  maxUsersPerRoom: 10,
 
   mediasoup: {
     numWorkers: Object.keys(os.cpus()).length,
@@ -72,12 +74,7 @@ export const config = {
 
     // WebRtcTransport settings
     webRtcTransport: {
-      listenIps: [
-        {
-          ip: env.MEDIASOUP_LISTEN_IP || "0.0.0.0",
-          announcedIp: env.MEDIASOUP_ANNOUNCED_IP, // this is the public IP address
-        },
-      ] as TransportListenIp[],
+      listenIps: getListenIps() as TransportListenIp[],
       initialAvailableOutgoingBitrate: 1000000,
       minimumAvailableOutgoingBitrate: 600000,
       maxSctpMessageSize: 262144,
