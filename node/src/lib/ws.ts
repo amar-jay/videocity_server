@@ -9,7 +9,7 @@ import { events } from "./config";
  * Get the router RTP capabilities. This is the first message sent by the client.
  */
 export function getRouterRtpCapabilities(ws: WebSocket) {
-    logger.log("getRouterRtpCapabilities called");
+    // logger.log("getRouterRtpCapabilities called");
     send(ws, events.GET_ROUTER_RTP_CAPABILITIES, mediasoup.getSupportedRtpCapabilities());
 }
 /**
@@ -19,7 +19,7 @@ export function runWebsocket(socket:  WebSocket.WebSocketServer, worker: mediaso
     socket.on('connection', (ws, req) => {
                 logger.log("new connection from " + req.socket.remoteAddress);
                 ws.on('message', (message) => {
-                    logger.log("received message: " + message);
+                    // logger.log("received message: " + message);
                     const event = isValidJSON<{data: any, event: string}>(message) 
                     if (event === null) return sendError("Invalid JSON", ws);
 
@@ -29,13 +29,13 @@ export function runWebsocket(socket:  WebSocket.WebSocketServer, worker: mediaso
                             break;
 
                         case events.ERROR:
-                            console.error(event.event);
+                            logger.error(event.event);
                             break;
                         default:
                             sendError("Unkown event type: " + event, ws);
                     }
 
-                    console.log(event?.data)
+                    logger.log(event?.data)
                 });
                 ws.on('close', () => {
                     logger.log("connection closed");

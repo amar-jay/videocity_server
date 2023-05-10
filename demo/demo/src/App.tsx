@@ -1,5 +1,5 @@
 "use client"
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -11,7 +11,7 @@ const events = {
 }
 
 
-const connect = (device: Mediasoup.types.Device) => {
+const connect = async (device: Mediasoup.types.Device) => {
   const url = 'ws://127.0.0.1:3000/ws';
 
 	const socket = new WebSocket(url);
@@ -20,7 +20,7 @@ const connect = (device: Mediasoup.types.Device) => {
     send(socket, events.GET_ROUTER_RTP_CAPABILITIES, device);
 	}
 
-	socket.onmessage = (event) => {
+	socket.onmessage = async (event) => {
     const data = isValidJSON<{event: string, data: any}>(event.data);
 		if (!data) {
 			console.error('JSON data is not valid')
@@ -31,6 +31,39 @@ const connect = (device: Mediasoup.types.Device) => {
 			case events.GET_ROUTER_RTP_CAPABILITIES:
         // send(socket, events.GET_ROUTER_RTP_CAPABILITIES, device);
         console.log("SERVER RTP CAPABILITY: ", data.data)
+        if (!device.canProduce('video')) {
+          console.error('cannot produce video');
+          return;
+        }
+
+        if (!device.canProduce('audio')) {
+          console.error('cannot produce audio');
+          return;
+        }
+
+        // const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        // const audioTrack = stream.getAudioTracks()[0];
+        // const videoTrack = stream.getVideoTracks()[0];
+        // const sendTransport = device.createSendTransport();
+        // sendTransport.on('connect', async ({ dtlsParameters }) => {
+        //   send(socket, 'connectTransport', { dtlsParameters, transportId: sendTransport.id });
+        // });
+
+        // sendTransport.on('produce', async ({ kind, rtpParameters, appData }, callback, errback) => {
+        //   try {
+        //     const { id } = await send(socket, 'produce', { transportId: sendTransport.id, kind, rtpParameters });
+        //     callback({ id });
+        //   } catch (err) {
+        //     errback(err);
+        //   }
+        // });
+
+        await device.load({ routerRtpCapabilities: data.data }).then(() => {
+          console.log("Device loaded")
+        }).catch((err) => {
+          console.error("Device failed to load", err)
+        })
+
 				break;
 
       case 'error':
@@ -46,6 +79,8 @@ const connect = (device: Mediasoup.types.Device) => {
 }
 
 function App() {
+  const [errorText, ] = useState<string | null>(null);
+  const [status, setStatus] = useState<"connected" | "not-connected" | string | null>(null);
 
 //   const getDevice = useCallback(async () => {
 // 	try {
@@ -63,7 +98,10 @@ function App() {
 
   useEffect(() => {
 	const device = new Mediasoup.Device();
-    connect(device);
+    connect(device).then(() => {
+      console.log("Connected to server")
+      setStatus("connected")
+    })
   }, [])
 
 
@@ -71,25 +109,36 @@ function App() {
   return (
     <>
 
-      <div>
+      {/* <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
+      </div> */}
+      <h1>Video<span>City</span></h1>
+      <div style={{borderWidth: '5px', borderColor: '#f00000'}}>
+      <input type="text" placeholder="Room ID" style={{ paddingLeft: '5px', fontSize: '13px', paddingTop: '10px', paddingBottom: '10px',}} />
+      {errorText && <p style={{color: 'red'}}>{errorText}</p> }
+        <h3 style={{marginBottom: '1rem', textDecoration: 'underline'}}>Permissions</h3>
+        <label htmlFor="video">Video</label>
+        <input type="checkbox" id="video" name="video" value="video" />
+        <div style={{marginTop: '.5rem'}}/>
+        <label htmlFor="audio">Audio</label>
+        <input type="checkbox" id="audio" name="audio" value="audio" />
+        <div style={{marginTop: '.5rem'}}/>
+        <label htmlFor="video">Screen</label>
+        <input type="checkbox" id="screen" name="screen" value="screen" />
+        <div style={{marginTop: '.5rem'}}/>
       </div>
-      <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => null}>
-          count is {}
+        <button onClick={() => null} disabled={status !== "connected"}>
+          Join Room
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
       <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
+        By amar-jay | <a href="https://github.com/amar-jay" target="_blank">Github</a>
       </p>
     </>
   )

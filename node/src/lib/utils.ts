@@ -1,4 +1,5 @@
 import WebSocket, { RawData } from 'ws';
+import logger from './logger';
 
 /**
  * Check if the given data is valid JSON.
@@ -11,9 +12,8 @@ export const isValidJSON = <R>(data: RawData): R | null => {
 
   try {
   message = JSON.parse(data.toString());
-//  console.log(data)
   } catch (err) {
-    console.error("Error in send: " + err);
+    logger.error("Error in send: " + err);
     return null;
   }
   return message;
@@ -31,7 +31,7 @@ export const send = (ws: WebSocket, event: string, data: any) => {
   try {
   message = JSON.stringify({ event, data });
   } catch (err) {
-    console.error("Error in send: " + err);
+    logger.error("Error in send: " + err);
     return;
   }
 

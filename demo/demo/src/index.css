@@ -19,10 +19,16 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+span {
+  color: #646cff;
+}
 a:hover {
   color: #535bf2;
 }
 
+label {
+  margin-right: 20px;
+}
 body {
   margin: 0;
   display: flex;
@@ -47,6 +53,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
