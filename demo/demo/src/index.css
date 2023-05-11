@@ -87,6 +87,16 @@ button:focus-visible {
 .copyText:hover {
   opacity: 0.8;
 }
+.primaryButton {
+  background-color: #646cff;
+  color: #ffffff;
+}
+
+.secondaryButton {
+  background-color: #1a1a1a;
+  color: #646cff;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

@@ -23,16 +23,16 @@ const connect = async (device: types.Device) => {
   };
 
   socket.onmessage = async (event) => {
-    const data = isValidJSON<{ event: string; data: any }>(event.data);
-    if (!data) {
+    const res = isValidJSON<{ event: string; data: any }>(event.data);
+    if (!res) {
       console.error("JSON data is not valid");
       return;
     }
 
-    switch (data.event) {
+    switch (res.event) {
       case events.GET_ROUTER_RTP_CAPABILITIES:
         // send(socket, events.GET_ROUTER_RTP_CAPABILITIES, device);
-        console.log("SERVER RTP CAPABILITY: ", data.data);
+        console.log("SERVER RTP CAPABILITY: ", res.data);
         if (!device.canProduce("video")) {
           console.error("cannot produce video");
           return;
@@ -57,7 +57,7 @@ const connect = async (device: types.Device) => {
         // });
 
         await device
-          .load({ routerRtpCapabilities: data.data })
+          .load({ routerRtpCapabilities: res.data })
           .then(() => {
             console.log("Device loaded");
           })
@@ -68,10 +68,10 @@ const connect = async (device: types.Device) => {
         break;
 
       case "error":
-        console.error(data);
+        console.error("Event Error (xxx): ", res);
         break;
       default:
-        console.error("Invalid event: ", data);
+        console.error("Invalid event: ", res);
       //				console.error('Invalid message');
     }
     // console.log(event.data, event.type);
