@@ -1,10 +1,12 @@
 <p align="center">
-<img src="./demo/demo/public/VideoCity.svg" width="100%" alt="videocity banner">
+<img src="./demo/demo/public/VideoCity.svg" width="75%" alt="videocity banner">
 </p>
 <br/>
 <h3 align="center">
     <span> VideoCity </span>
-    is the ultimate video conferencing software for students. Revolutionizing the way we study
+    is the ultimate video conferencing software for students.
+    <br/>
+     Revolutionizing the way we study
 </h3>
 
 # What is Videocity
