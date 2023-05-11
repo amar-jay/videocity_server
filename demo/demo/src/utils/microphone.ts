@@ -1,6 +1,5 @@
-import { types } from "mediasoup-client";
 
-export const enableMicrophone = async (device: types.Device) => {
+export const enableMicrophone = async () => {
 	console.log("enableMicrophone called");
 	const audio = document.querySelector("#localAudio") as HTMLAudioElement;
 	const video = document.querySelector("#localVideo") as HTMLVideoElement;

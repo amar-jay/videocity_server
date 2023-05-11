@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { enableMicrophone } from "../utils/microphone";
-import * as Mediasoup from "mediasoup-client";
+// import * as Mediasoup from "mediasoup-client";
 
 export function Demo () {
   const [devices, setDevices] = useState<string>();
   useEffect(() => {
-    const device = new Mediasoup.Device();
+    // const device = new Mediasoup.Device();
     async function menu() {
-    enableMicrophone(device)
+    enableMicrophone()
     const devices = navigator.mediaDevices.enumerateDevices(); // TODO: how to get media devices?
     setDevices(JSON.stringify(devices, null, 2));
 

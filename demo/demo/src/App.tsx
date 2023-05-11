@@ -5,9 +5,8 @@ import { isValidJSON, send } from "./utils";
 import Index from "./pages/Index";
 import { CopyLink } from "./pages/CopyLink";
 import { ToastProvider } from "./components/toast";
-import { RouterProvider, createBrowserRouter, useNavigate } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Demo } from "./pages/Demo";
-import { enableMicrophone } from "./utils/microphone";
 import { Device, types } from "mediasoup-client";
 
 const events = {
@@ -39,7 +38,6 @@ const connect = async (device: types.Device) => {
           return;
         }
 
-        enableMicrophone(device)
 
         // const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         // const audioTrack = stream.getAudioTracks()[0];
