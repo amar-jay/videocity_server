@@ -1,19 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
 import "./App.css";
-import * as Mediasoup from "mediasoup-client";
 import { isValidJSON, send } from "./utils";
 import Index from "./pages/Index";
 import { CopyLink } from "./pages/CopyLink";
 import { ToastProvider } from "./components/toast";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, useNavigate } from "react-router-dom";
 import { Demo } from "./pages/Demo";
+import { enableMicrophone } from "./utils/microphone";
+import { Device, types } from "mediasoup-client";
 
 const events = {
   GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",
 };
 
-const connect = async (device: Mediasoup.types.Device) => {
+const connect = async (device: types.Device) => {
   const url = "ws://127.0.0.1:3000/ws?room_id=1234&peer_id=1234";
 
   const socket = new WebSocket(url);
@@ -38,10 +39,7 @@ const connect = async (device: Mediasoup.types.Device) => {
           return;
         }
 
-        if (!device.canProduce("audio")) {
-          console.error("cannot produce audio");
-          return;
-        }
+        enableMicrophone(device)
 
         // const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         // const audioTrack = stream.getAudioTracks()[0];
@@ -65,7 +63,7 @@ const connect = async (device: Mediasoup.types.Device) => {
           .then(() => {
             console.log("Device loaded");
           })
-          .catch((err) => {
+          .catch((err: Error) => {
             console.error("Device failed to load", err);
           });
 
@@ -98,6 +96,13 @@ function App() {
   // 	}
   // }, [setDevice]);
 
+  useEffect(() => {
+    const device = new Device();
+    connect(device).then(() => {
+      console.log("Connected to server");
+      setStatus("connected");
+    });
+  }, []);
   const router = createBrowserRouter([
     {
       path: "/",
@@ -109,22 +114,15 @@ function App() {
       element: (() => <CopyLink status={status} />)(),
     },
     {
-      path: "/room/:roomId",
+      path: "/demo",
       element: <Demo/>,
     }
   ]);
 
-  useEffect(() => {
-    const device = new Mediasoup.Device();
-    connect(device).then(() => {
-      console.log("Connected to server");
-      setStatus("connected");
-    });
-  }, []);
+
 
   return (
     <ToastProvider>
-      {/* <CopyLink status={status} link={url} /> */}
       <RouterProvider router={router} />
     </ToastProvider>
   )

@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface IndexProps {
   status?: string;
 }
 function Index({ status }: IndexProps) {
   const [errorText] = useState<string | null>(null);
+  const navigate = useNavigate();
   return (
     <>
       {/* <div>
@@ -44,7 +46,7 @@ function Index({ status }: IndexProps) {
         <div style={{ marginTop: ".5rem" }} />
       </div>
       <div className="card">
-        <button onClick={() => null} disabled={status !== "connected"}>
+        <button onClick={() => navigate("/demo")} disabled={status !== "connected"}>
           Join Room
         </button>
       </div>
