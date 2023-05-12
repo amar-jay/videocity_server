@@ -3,16 +3,17 @@ import logger from "../../utils/logger";
 import { WebSocket } from "ws";
 import { v4 as uuid } from "uuid";
 import { types } from "mediasoup";
-import { Role, Peer as IPeer } from "@/types/room";
+import { Role,} from "@/types/room";
+import { MyPeer } from "@/types/peer";
 
-export class Peer extends EventEmitter implements IPeer {
-  id: IPeer["id"];
-  socket: IPeer["socket"];
-  roomId: IPeer["roomId"];
-  picture: IPeer["picture"];
-  displayName: IPeer["displayName"];
-  email: IPeer["email"];
-  rtpCapabilities: IPeer["rtpCapabilities"];
+export class Peer extends EventEmitter {
+  id: MyPeer["id"];
+  socket: MyPeer["socket"];
+  roomId: MyPeer["roomId"];
+  picture: MyPeer["picture"];
+  displayName: MyPeer["displayName"];
+  email: MyPeer["email"];
+  rtpCapabilities: MyPeer["rtpCapabilities"];
   roles: Role[];
   joined: boolean;
   private closed: boolean;
@@ -28,9 +29,10 @@ export class Peer extends EventEmitter implements IPeer {
     displayName,
     email,
     rtpCapabilities,
-  }: IPeer) {
-    logger.log("Peer constructor() [peerId:" + id + "]");
+  }: MyPeer) {
     super();
+
+    logger.log("Peer constructor() [peerId:" + id + "]");
     this.closed = false;
     this.id = uuid();
     // this.authId = id; // not necessary
@@ -56,7 +58,7 @@ export class Peer extends EventEmitter implements IPeer {
       );
       return;
     }
-    this.socket.on("disconnect", (event) => {
+    this.socket.on("disconnect", (event: any) => {
       logger.log(
         "Peer socket 'disconnect' event [peerId:" + this.id + "], event: %o",
         event

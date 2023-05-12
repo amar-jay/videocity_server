@@ -1,6 +1,8 @@
 import { Room } from "@/lib/room";
 import { types } from "mediasoup";
 import { WebSocket } from "ws";
+import { Router, Worker } from "mediasoup/lib/types";
+import { MyPeer } from "./MyPeer";
 
 export type RoomId = string;
 
@@ -8,16 +10,7 @@ export interface Role {
   id: string;
   name: "admin" | "guest" | "moderator";
 }
-export interface Peer {
-  id: string;
-  picture?: string;
-  displayName?: string;
-  email?: string;
-  roles?: unknown[];
-  roomId: string;
-  socket: WebSocket;
-  rtpCapabilities?: types.RtpCapabilities;
-}
+
 export type RoomParameters = {
   roomId: RoomId;
   routers: Routers;
@@ -38,4 +31,14 @@ export type Routers = Map<string, types.Router>;
 export type AudioObservers = Map<
   string,
   { peerId: null; audioLevelObserver: types.AudioLevelObserver; volume: -1000 }
+>;
+
+
+export type Then<T> = T extends PromiseLike<infer U> ? U : T;
+
+export type MyRoomState = Record<string, MyPeer>;
+
+export type MyRooms = Record<
+  string,
+  { worker: Worker; router: Router; state: MyRoomState }
 >;

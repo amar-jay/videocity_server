@@ -11,6 +11,8 @@ import { log } from "console";
 import { getNextMediasoupWorker } from "../utils/worker";
 import { getRouterRtpCapabilities } from "./room/handlers";
 import { mediasoupWorkers } from "./worker";
+import { WsRequest } from "@/types";
+import requestActions from "./actions";
 
 const rooms = new Map<string, Room>();
 const peers = new Map<string, Peer>();
@@ -73,7 +75,7 @@ export function runWebsocket(
         peer.handlePeerReconnection(ws);
         return;
       }
-      peer = new Peer({ id: peerId, roomId, socket: ws});
+      peer = new Peer({ id: peerId, roomId, socket: ws, consumers: new Map()});
       room.handlePeer({ peer, allowed: true });
       logger.log("new peer [peer ID: %s]", peerId);
 
@@ -97,6 +99,7 @@ export function runWebsocket(
       const event = isValidJSON<WsRequest<string>>(message);
       if (event === null) return sendError("Invalid JSON", ws);
 
+      requestActions(ws, event.event);
       switch (event.event) {
         case requestEvents.GET_ROUTER_RTP_CAPABILITIES:
           getRouterRtpCapabilities(ws);

@@ -49,8 +49,9 @@ export class Room extends EventEmitter {
     peers,
     consumerReplicas,
   }: RoomParameters) {
-    logger.log('Room constructor() [roomId:"%s"]', roomId);
     super();
+
+    logger.log('Room constructor() [roomId:"%s"]', roomId);
     this._id = uuid(); // TODO: generate room id
     this._roomId = roomId;
     this._locked = false;
@@ -147,7 +148,8 @@ export class Room extends EventEmitter {
     logger.log(
       'Room.log() [roomId:"%s", peersCount: %s]',
       this._roomId,
-      Object.keys(this?._peers).length
+      // Object.keys(this?._peers).length
+      this._peers.size
     );
   }
   // get room

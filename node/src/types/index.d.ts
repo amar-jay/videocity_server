@@ -1,5 +1,7 @@
+import { RequestEvents } from "@/lib/config";
+
 type WsRequest<T extends unknown> = {
-	  event: string;
+	  event: RequestEvents[keyof RequestEvents];
 	  data: T;
 }
 

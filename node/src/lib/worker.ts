@@ -3,6 +3,7 @@ import { config } from "./config";
 import logger from "../utils/logger";
 import { set } from "zod";
 import { clone } from "../utils";
+import { MediasoupWorkers } from "@/types";
 //import { workerData } from "worker_threads";
 
 export let mediasoupWorkers: MediasoupWorkers = [];
