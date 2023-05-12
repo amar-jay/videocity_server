@@ -7,7 +7,7 @@ import config, { requestEvents } from "../config";
 import * as mediasoup from "mediasoup";
 import { send, sendError } from "../../utils";
 import { Router } from "express";
-import {types} from "mediasoup"
+import { types } from "mediasoup";
 import { MyPeer } from "@/types/peer";
 import { MyRooms } from "@/types/room";
 import { WsRequest } from "@/types";
@@ -42,11 +42,19 @@ export function getRouterRtpCapabilities(ws: WebSocket) {
     mediasoup.getSupportedRtpCapabilities()
   );
 }
-function handleSocketRequest<T extends WsRequest<Peer>>({peer, request, socket}:{peer: Peer, request: T, socket: WebSocket}) {
+function handleSocketRequest<T extends WsRequest<Peer>>({
+  peer,
+  request,
+  socket,
+}: {
+  peer: Peer;
+  request: T;
+  socket: WebSocket;
+}) {
   //TODO: handle socket request
   switch (request.event) {
     case requestEvents.GET_ROUTER_RTP_CAPABILITIES:
-      getRouterRtpCapabilities(socket)
+      getRouterRtpCapabilities(socket);
       break;
     case requestEvents.JOIN:
       {
@@ -55,7 +63,7 @@ function handleSocketRequest<T extends WsRequest<Peer>>({peer, request, socket}:
           logger.warn("Peer already joined [peer ID: %s]", peer.id);
           return;
         }
-        const { rtpCapabilities, picture, displayName, } = request.data;
+        const { rtpCapabilities, picture, displayName } = request.data;
         peer.displayName = displayName;
         peer.picture = picture;
         peer.rtpCapabilities = rtpCapabilities;
@@ -63,8 +71,7 @@ function handleSocketRequest<T extends WsRequest<Peer>>({peer, request, socket}:
         // Tell the new Peer about already joined Peers.
         const joinedPeers = joinPeer(peer, true);
 
-        const peerInfos = joinedPeers.map((joinedPeer) => ({
-        }));
+        const peerInfos = joinedPeers.map((joinedPeer) => ({}));
         peer.joined = true;
       }
       break;
@@ -104,7 +111,6 @@ function handleSocketRequest<T extends WsRequest<Peer>>({peer, request, socket}:
   }
 }
 
-
 function handleNotification(ws: WebSocket, notification: string) {
   // TODO: handle notification
 }
@@ -113,8 +119,6 @@ function handleRoomOverLimit(peer: Peer) {
   handleNotification(peer.socket, "roomOverLimit");
 }
 
-
-
 /**
  * Create WebRTC Transport
  */
@@ -122,13 +126,13 @@ async function createWebrtcTransport({
   peerId,
   router,
   clientDirection,
-}: WebRtcTransportOptions): Promise<types.WebRtcTransport<Omit<WebRtcTransportOptions, "router">>>{
+}: WebRtcTransportOptions): Promise<
+  types.WebRtcTransport<Omit<WebRtcTransportOptions, "router">>
+> {
   logger.log("creating transport for [peer id: %s]", peerId);
 
-  const {
-    listenIps,
-    initialAvailableOutgoingBitrate
-  } = config.mediasoup.webRtcTransport
+  const { listenIps, initialAvailableOutgoingBitrate } =
+    config.mediasoup.webRtcTransport;
 
   const transport = await router.createWebRtcTransport({
     listenIps,
@@ -136,13 +140,13 @@ async function createWebrtcTransport({
     enableTcp: true,
     preferUdp: true,
     initialAvailableOutgoingBitrate,
-    appData: { peerId, clientDirection}
-  })
+    appData: { peerId, clientDirection },
+  });
   return transport;
 }
 
 /**
- * Create WebRTC Consumer 
+ * Create WebRTC Consumer
  */
 async function createWebRtcConsumer({
   transport,
@@ -151,19 +155,20 @@ async function createWebRtcConsumer({
   router,
   peerId,
   consumingPeer,
-}:WebRtcConsumerOptions): Promise<Consumer> {
-  const mediaPeerId = producer.appData.peerId
+}: WebRtcConsumerOptions): Promise<Consumer> {
+  const mediaPeerId = producer.appData.peerId;
 
-  if (!router.canConsume({producerId: producer.id, rtpCapabilities})){
-    throw new Error(`recv-track: client cannot consume [peerid: ${producer.appData.peerId}]`);
-
+  if (!router.canConsume({ producerId: producer.id, rtpCapabilities })) {
+    throw new Error(
+      `recv-track: client cannot consume [peerid: ${producer.appData.peerId}]`
+    );
   }
   const consumer = await transport.consume({
     producerId: producer.id,
     rtpCapabilities,
-    paused: false, // see notes on pausing 
-    appData: { peerId, mediaPeerId}
-  })
+    paused: false, // see notes on pausing
+    appData: { peerId, mediaPeerId },
+  });
 
   consumingPeer.consumers.set(consumer.id, consumer);
 
@@ -178,11 +183,10 @@ async function createWebRtcConsumer({
       producerPaused: consumer.producerPaused,
     },
   };
-
 }
 
-function deleteRoom({ roomId, rooms }: { roomId: string, rooms: MyRooms }) {
-    if (!(roomId in rooms)) {
+function deleteRoom({ roomId, rooms }: { roomId: string; rooms: MyRooms }) {
+  if (!(roomId in rooms)) {
     return;
   }
 
@@ -198,23 +202,23 @@ export default {
   handleRoomOverLimit,
   createWebRtcConsumer,
   createWebrtcTransport,
-  deleteRoom
+  deleteRoom,
 };
 
 interface WebRtcTransportOptions {
-  peerId: string,
-  clientDirection: "send" | "recieve",
-  router: types.Router
+  peerId: string;
+  clientDirection: "send" | "recieve";
+  router: types.Router;
 }
 
 interface WebRtcConsumerOptions {
-  router: types.Router,
-  producer: types.Producer,
-  rtpCapabilities: types.RtpCapabilities,
-  transport: types.Transport,
-  paused: types.Producer["paused"],
-  peerId: string,
-  consumingPeer: MyPeer,
+  router: types.Router;
+  producer: types.Producer;
+  rtpCapabilities: types.RtpCapabilities;
+  transport: types.Transport;
+  paused: types.Producer["paused"];
+  peerId: string;
+  consumingPeer: MyPeer;
 }
 
 export interface Consumer {
@@ -227,4 +231,4 @@ export interface Consumer {
     type: types.ConsumerType;
     producerPaused: boolean;
   };
-};
+}

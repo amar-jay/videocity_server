@@ -3,7 +3,7 @@ import logger from "../../utils/logger";
 import { WebSocket } from "ws";
 import { v4 as uuid } from "uuid";
 import { types } from "mediasoup";
-import { Role,} from "@/types/room";
+import { Role } from "@/types/room";
 import { MyPeer } from "@/types/peer";
 
 export class Peer extends EventEmitter {

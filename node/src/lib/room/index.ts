@@ -77,20 +77,20 @@ export class Room extends EventEmitter {
     let audioObservers: AudioObservers = new Map(); // TODO: create audio level observer class
     // let audioLevelObservers: types.AudioLevelObserver[] = []; //TODO: create audio level observer class
 
-      // Creating only one router per worker since there is no need for multiple
-      const router = await worker.createRouter({ mediaCodecs });
-      routers.set(router.id, router);
+    // Creating only one router per worker since there is no need for multiple
+    const router = await worker.createRouter({ mediaCodecs });
+    routers.set(router.id, router);
 
-      const audioLevelObserver = await router.createAudioLevelObserver(
-        config.mediasoup.router.audioLevelObserver
-      );
-      audioObservers.set(router.id, {
-        audioLevelObserver,
-        volume: -1000,
-        peerId: null,
-      });
+    const audioLevelObserver = await router.createAudioLevelObserver(
+      config.mediasoup.router.audioLevelObserver
+    );
+    audioObservers.set(router.id, {
+      audioLevelObserver,
+      volume: -1000,
+      peerId: null,
+    });
 
-      const activeSpeakerObserver = await router.createActiveSpeakerObserver();
+    const activeSpeakerObserver = await router.createActiveSpeakerObserver();
 
     return new Room({
       roomId,
@@ -198,5 +198,4 @@ export class Room extends EventEmitter {
   getPeer(peerId: string) {
     return this._peers.get(peerId);
   }
-
 }

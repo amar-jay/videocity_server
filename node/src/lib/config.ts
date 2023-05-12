@@ -115,8 +115,8 @@ export const config = {
 export const requestEvents = {
   GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",
   JOIN: "join",
-  CREATE_WEBRTC_TRANSPORT:  "createWebrtcTransport",
-  CONNECT_WEBRTC_TRANSPORT:  "connectWebrtcTransport",
+  CREATE_WEBRTC_TRANSPORT: "createWebrtcTransport",
+  CONNECT_WEBRTC_TRANSPORT: "connectWebrtcTransport",
   RESTART_ICE: "restartIce",
   PRODUCE: "produce",
   CLOSE_PRODUCER: "closeProducer",
@@ -149,5 +149,5 @@ export const requestEvents = {
 
   ERROR: "error",
 } as const;
-export type RequestEvents = typeof requestEvents
+export type RequestEvents = typeof requestEvents;
 export default config;

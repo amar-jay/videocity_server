@@ -6,7 +6,7 @@ type OtherPeer = {
   sendTransport?: Transport;
   recvTransport?: Transport;
   producer?: Producer;
-  consumers: Map<string,Consumer>;
+  consumers: Map<string, Consumer>;
 };
 interface MyPeer extends OtherPeer {
   id: string;
@@ -18,4 +18,4 @@ interface MyPeer extends OtherPeer {
   socket: WebSocket;
   rtpCapabilities?: types.RtpCapabilities;
   allowed?: boolean;
-};
+}

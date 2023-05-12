@@ -33,7 +33,6 @@ export type AudioObservers = Map<
   { peerId: null; audioLevelObserver: types.AudioLevelObserver; volume: -1000 }
 >;
 
-
 export type Then<T> = T extends PromiseLike<infer U> ? U : T;
 
 export type MyRoomState = Record<string, MyPeer>;

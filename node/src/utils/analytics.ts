@@ -1,5 +1,3 @@
 export const analytics = () => {
-
-
-    return;
-}
+  return;
+};
