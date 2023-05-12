@@ -9,10 +9,12 @@ export class Peer extends EventEmitter implements IPeer {
   id: IPeer["id"];
   socket: IPeer["socket"];
   roomId: IPeer["roomId"];
+  picture: IPeer["picture"];
   displayName: IPeer["displayName"];
   email: IPeer["email"];
   rtpCapabilities: IPeer["rtpCapabilities"];
   roles: Role[];
+  joined: boolean;
   private closed: boolean;
   raisedHand: boolean;
   transports: Map<string, types.Transport> = new Map();
@@ -42,6 +44,7 @@ export class Peer extends EventEmitter implements IPeer {
     this.transports = new Map();
     this.producers = new Map();
     this.consumers = new Map();
+    this.joined = false;
 
     this.handlePeer();
   }

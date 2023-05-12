@@ -112,8 +112,41 @@ export const config = {
   },
 };
 
-export const events = {
-  GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",
-  ERROR: "error",
+export enum requestEvents {
+  GET_ROUTER_RTP_CAPABILITIES = "getRouterRtpCapabilities",
+  JOIN = "join",
+  CREATE_WEBRTC_TRANSPORT =  "createWebrtcTransport",
+  CONNECT_WEBRTC_TRANSPORT =  "connectWebrtcTransport",
+  RESTART_ICE = "restartIce",
+  PRODUCE = "produce",
+  CLOSE_PRODUCER = "closeProducer",
+  PAUSE_PRODUCER = "pauseProducer",
+  RESUME_PRODUCER = "resumeProducer",
+  PAUSE_CONSUMER = "pauseConsumer",
+  RESUME_CONSUMER = "resumeProducer",
+
+  REQUEST_CONSUMER_KEY_FRAME = "requestConsumerKeyFrame",
+  GET_PRODUCER_STATS = "getProducerStats",
+  GET_TRANSPORT_STATS = "getTransportStats",
+  GET_CONSUMER_STATS = "getConsumerStats",
+  CLOSE_PEER = "closePeer",
+  CHAT_MESSAGE = "chatMessage",
+
+  SYNC_DOC_INFOMATION = "syncDocInfomation",
+  CLASS_START = "classStart",
+  CLASS_STOP = "classStop",
+  ROOM_INFO = "roomInfo",
+  CHANGE_DISPLAY_NALE = "changeDisplayName",
+  CHANGE_ROLE = "change_role",
+
+  CONNECT_VIDEO = "connectVideo",
+  DISCONNECT_VIDEO = "disconnectVideo",
+  CONNECT_APPROVAL = "connectApproval",
+  SWITCH_COMPONENT = "switchComponent",
+
+  MUTED = "muted",
+  UNMUTED = "unmuted",
+
+  ERROR = "error",
 };
 export default config;

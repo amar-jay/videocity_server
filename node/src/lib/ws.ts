@@ -9,21 +9,11 @@ import { Peer } from "./peer";
 import { types } from "mediasoup";
 import { log } from "console";
 import { getNextMediasoupWorker } from "./worker";
+import { getRouterRtpCapabilities } from "./room/handlers";
 
 const rooms = new Map<string, Room>();
 const peers = new Map<string, Peer>();
 const queue = new AwaitQueue();
-/**
- * Get the router RTP capabilities. This is the first message sent by the client.
- */
-export function getRouterRtpCapabilities(ws: WebSocket) {
-  // logger.log("getRouterRtpCapabilities called");
-  send(
-    ws,
-    events.GET_ROUTER_RTP_CAPABILITIES,
-    mediasoup.getSupportedRtpCapabilities()
-  );
-}
 /**
  * create a room given a room id
  */
@@ -106,7 +96,7 @@ export function runWebsocket(
 
     ws.on("message", (message) => {
       // logger.log("received message: " + message);
-      const event = isValidJSON<{ data: any; event: string }>(message);
+      const event = isValidJSON<WsRequest<string>>(message);
       if (event === null) return sendError("Invalid JSON", ws);
 
       switch (event.event) {

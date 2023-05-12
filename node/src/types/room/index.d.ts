@@ -10,6 +10,7 @@ export interface Role {
 }
 export interface Peer {
   id: string;
+  picture?: string;
   displayName?: string;
   email?: string;
   roles?: unknown[];
