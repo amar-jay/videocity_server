@@ -1,29 +1,27 @@
-import logger from "./logger";
+import logger from "../utils/logger";
 import WebSocket from "ws";
 import * as mediasoup from "mediasoup";
-import {  isValidJSON, send, sendError } from "./utils";
-import { events } from "./config";
+import {  isValidJSON, send, sendError } from "../utils";
+import { requestEvents } from "./config";
 import { AwaitQueue } from "awaitqueue";
 import { Room } from "./room";
 import { Peer } from "./peer";
 import { types } from "mediasoup";
 import { log } from "console";
-import { getNextMediasoupWorker } from "./worker";
+import { getNextMediasoupWorker } from "../utils/worker";
 import { getRouterRtpCapabilities } from "./room/handlers";
+import { mediasoupWorkers } from "./worker";
 
 const rooms = new Map<string, Room>();
 const peers = new Map<string, Peer>();
 const queue = new AwaitQueue();
-/**
- * create a room given a room id
- */
-function createRoom({ roomid }: { roomid: string }) {}
+
 
 const getOrCreateRoom = async (roomId: string, consumerReplicas: number) => {
   if (rooms.has(roomId)) {
     return rooms.get(roomId)!;
   }
-  const worker = getNextMediasoupWorker();
+  const worker = getNextMediasoupWorker(mediasoupWorkers);
 
   // create a new room if it doesn't exist
   logger.log("\t- creating new room [roomid: %s]", roomId);
@@ -100,11 +98,11 @@ export function runWebsocket(
       if (event === null) return sendError("Invalid JSON", ws);
 
       switch (event.event) {
-        case events.GET_ROUTER_RTP_CAPABILITIES:
+        case requestEvents.GET_ROUTER_RTP_CAPABILITIES:
           getRouterRtpCapabilities(ws);
           break;
 
-        case events.ERROR:
+        case requestEvents.ERROR:
           logger.error(event.event);
           break;
         default:

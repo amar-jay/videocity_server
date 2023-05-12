@@ -1,27 +1,13 @@
 import * as mediasoup from "mediasoup";
 import { config } from "./config";
-import logger from "./logger";
+import logger from "../utils/logger";
 import { set } from "zod";
-import { clone } from "./utils";
+import { clone } from "../utils";
 //import { workerData } from "worker_threads";
 
-let mediasoupWorkers: {
-  worker: mediasoup.types.Worker;
-  router: mediasoup.types.Router | null;
-}[] = [];
+export let mediasoupWorkers: MediasoupWorkers = [];
 
-// Index of mediasoup worker
-let mediasoupWorkerIdx: number = 0;
 
-/**
- * Get next mediasoup worker.
- * Round robin way.
- */
-export const getNextMediasoupWorker = () => {
-  const worker = mediasoupWorkers[mediasoupWorkerIdx].worker;
-  mediasoupWorkerIdx = (mediasoupWorkerIdx + 1) % mediasoupWorkers.length;
-  return worker;
-};
 
 /**
  * Launch mediasoup workers as specified in configuration file.

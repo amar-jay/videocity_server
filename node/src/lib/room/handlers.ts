@@ -2,10 +2,12 @@
 import { WebSocket } from "ws";
 
 import { Peer } from "../peer";
-import logger from "../logger";
-import { requestEvents } from "../config";
+import logger from "../../utils/logger";
+import config, { requestEvents } from "../config";
 import * as mediasoup from "mediasoup";
-import { send, sendError } from "../utils";
+import { send, sendError } from "../../utils";
+import { Router } from "express";
+import {types} from "mediasoup"
 
 function joinPeer(peer: Peer, allowed?: boolean): Peer[] {
   if (!allowed) {
@@ -14,6 +16,7 @@ function joinPeer(peer: Peer, allowed?: boolean): Peer[] {
   }
 
   // TODO: handle returning peer and the rest of the function
+  return [peer];
 }
 
 function handleGuestPeer({ peer }: { peer: Peer }) {
@@ -108,6 +111,38 @@ function handleNotification(ws: WebSocket, notification: string) {
 
 function handleRoomOverLimit(peer: Peer) {
   handleNotification(peer.socket, "roomOverLimit");
+}
+
+interface WebRtcTransportOptions {
+  peerId: string,
+  clientDirection: "send" | "recieve",
+  router: types.Router
+}
+
+/**
+ * Create WebRTC Transport
+ */
+async function createWebrtcTransport({
+  peerId,
+  router,
+  clientDirection,
+}: WebRtcTransportOptions): Promise<types.WebRtcTransport<Omit<WebRtcTransportOptions, "router">>>{
+  logger.log("creating transport for [peer id: %s]", peerId);
+
+  const {
+    listenIps,
+    initialAvailableOutgoingBitrate
+  } = config.mediasoup.webRtcTransport
+
+  const transport = await router.createWebRtcTransport({
+    listenIps,
+    enableUdp: true,
+    enableTcp: true,
+    preferUdp: true,
+    initialAvailableOutgoingBitrate,
+    appData: { peerId, clientDirection}
+  })
+  return transport;
 }
 
 export default {

@@ -10,7 +10,7 @@ import {
   WebRtcServerListenInfo,
 } from "mediasoup/node/lib/types";
 import os from "os";
-import { getListenIps } from "./utils";
+import { getListenIps } from "../utils";
 
 export const config = {
   redisOptions: {},

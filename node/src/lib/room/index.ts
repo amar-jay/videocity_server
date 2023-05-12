@@ -1,4 +1,4 @@
-import logger from "../logger";
+import logger from "../../utils/logger";
 import { EventEmitter } from "events";
 import config from "../config";
 import { AwaitQueue } from "awaitqueue";
