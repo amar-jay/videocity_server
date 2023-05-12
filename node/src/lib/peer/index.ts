@@ -109,4 +109,12 @@ export class Peer extends EventEmitter implements IPeer {
     logger.log("Peer close() [peerId:" + this.id + "]");
     this.closed = true;
   }
+
+  // TODO: check if this is right
+  handlePeerReconnection(socket: WebSocket) {
+    logger.log("Peer handlePeerReconnection() [peerId:" + this.id + "]");
+    this.socket = socket;
+    this.closed = false;
+    this.handlePeer();
+  }
 }

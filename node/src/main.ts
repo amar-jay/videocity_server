@@ -12,14 +12,11 @@ import { startMediasoup } from "./lib/worker";
 import { runWebsocket } from "./lib/ws";
 
 let redisClient: ReturnType<typeof redis.createClient>;
-let rooms = new Map();
 let app: Express;
 let server: http.Server;
 let socket: WebSocketServer;
 let configError: any; // temporary
 
-// a map of peers indexed by ids
-const peer = new Map();
 
 function init() {
   // node version check
@@ -69,10 +66,7 @@ try {
   process.exit(-1);
 }
 
-/**
- * create a room given a room id
- */
-function createRoom({ roomid }: { roomid: string }) {}
+
 
 /**
  * create a websocket to allow websocker connection from browsers.

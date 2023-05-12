@@ -193,5 +193,8 @@ export class Room extends EventEmitter {
 
   //----
   // createRoom({roomID})
+  getPeer(peerId: string) {
+    return this._peers.get(peerId);
+  }
 
 }

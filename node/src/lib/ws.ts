@@ -24,6 +24,10 @@ export function getRouterRtpCapabilities(ws: WebSocket) {
     mediasoup.getSupportedRtpCapabilities()
   );
 }
+/**
+ * create a room given a room id
+ */
+function createRoom({ roomid }: { roomid: string }) {}
 
 const getOrCreateRoom = async (roomId: string, consumerReplicas: number) => {
   if (rooms.has(roomId)) {
@@ -67,6 +71,7 @@ export function runWebsocket(
     }
 
     if (!consumerReplicas || consumerReplicas < 1 || isNaN(consumerReplicas)) {
+      logger.warn("invalid consumer_replicas, setting to 0");
       consumerReplicas = 0;
     }
 
@@ -74,11 +79,17 @@ export function runWebsocket(
 
     queue.push(async () => {
       const room = await getOrCreateRoom(roomId, consumerReplicas);
-      const peer = peers.get(peerId!) || new Peer({ id: peerId, roomId, socket: ws});
-      peers.set(peerId!, peer);
+      let peer = room.getPeer(peerId)
+      if (peer) {
+        logger.log("peer reconnected [peer ID: %s]", peerId);
+        peer.handlePeerReconnection(ws);
+        return;
+      }
+      peer = new Peer({ id: peerId, roomId, socket: ws});
+      room.handlePeer({ peer, allowed: true });
+      logger.log("new peer [peer ID: %s]", peerId);
 
       peer.on("close", () => {
-        peers.delete(peerId);
         logger.log("peer closed [peer ID: %s]", peerId);
       });
 
