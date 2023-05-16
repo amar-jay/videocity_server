@@ -16,7 +16,7 @@ const events = {
   GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",
 };
 
-const connect = async (device: types.Device) => {
+const _connect = async (device: types.Device) => {
   const url = "ws://127.0.0.1:3000/ws?room_id=1234&peer_id=1234";
 
   const socket = new WebSocket(url);

@@ -1,7 +1,6 @@
 import { Device, types } from 'mediasoup-client';
 import protooClient from 'protoo-client';
 import { getLocalStream } from './utils/microphone';
-import { send } from './utils';
 
 interface GetProtooUrlOptions {
 	roomId: number;
