@@ -1,5 +1,9 @@
 
 let LOCAL_STREAM: MediaStream | null = null;
+export const getLocalStream = async () => {
+	await enableMediaStream("#localVideo", { audio: true, video: true });
+	return LOCAL_STREAM;
+}
 export const enableMediaStream = async (id: `#${string}`, constraints: MediaStreamConstraints) => {
 	console.log("enableVideoStream called");
 	// const audio = document.querySelector("#localAudio") as HTMLAudioElement;

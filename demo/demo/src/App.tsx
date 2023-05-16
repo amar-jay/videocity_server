@@ -1,4 +1,6 @@
 "use client";
+import {handleConnectionSocket}  from "./ws"
+
 import { useEffect, useState } from "react";
 import "./App.css";
 import { isValidJSON, send } from "./utils";
@@ -7,7 +9,8 @@ import { CopyLink } from "./pages/CopyLink";
 import { ToastProvider } from "./components/toast";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Demo } from "./pages/Demo";
-import { Device, types } from "mediasoup-client";
+
+import { types } from "mediasoup-client";
 
 const events = {
   GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",
@@ -95,11 +98,14 @@ function App() {
   // }, [setDevice]);
 
   useEffect(() => {
-    const device = new Device();
-    connect(device).then(() => {
-      console.log("Connected to server");
+    handleConnectionSocket().then(() => {
+      console.log("protoo connected");
       setStatus("connected");
     });
+    // connect(device).then(() => {
+    //   console.log("Connected to server");
+    //   setStatus("connected");
+    // });
   }, []);
   const router = createBrowserRouter([
     {

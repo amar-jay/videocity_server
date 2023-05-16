@@ -10,6 +10,7 @@ import { types } from "mediasoup";
 import { log } from "console";
 import { getNextMediasoupWorker } from "./worker";
 import { getRouterRtpCapabilities } from "./room/handlers";
+import { create } from "domain";
 
 const rooms = new Map<string, Room>();
 const peers = new Map<string, Peer>();
@@ -102,6 +103,25 @@ export function runWebsocket(
       switch (event.event) {
         case events.GET_ROUTER_RTP_CAPABILITIES:
           getRouterRtpCapabilities(ws);
+          break;
+
+        case events.CREATE_TRANSPORT:
+          const {
+            id, 
+            iceParameters,
+            iceCandidates,
+            dtlsParameters,
+            sctpParameters,
+          } = createTransportRequest(event.data, ws);
+          break;
+        
+        case events.CONNECT_TRANSPORT:
+          break;
+        
+        case events.PRODUCE:
+          break;
+        
+        case events.CONSUME:
           break;
 
         case events.ERROR:
