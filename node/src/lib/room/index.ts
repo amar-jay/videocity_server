@@ -1,4 +1,4 @@
-import logger from "../logger";
+import logger from "../../utils/logger";
 import { EventEmitter } from "events";
 import config from "../config";
 import { AwaitQueue } from "awaitqueue";
@@ -49,8 +49,9 @@ export class Room extends EventEmitter {
     peers,
     consumerReplicas,
   }: RoomParameters) {
-    logger.log('Room constructor() [roomId:"%s"]', roomId);
     super();
+
+    logger.log('Room constructor() [roomId:"%s"]', roomId);
     this._id = uuid(); // TODO: generate room id
     this._roomId = roomId;
     this._locked = false;
@@ -76,20 +77,20 @@ export class Room extends EventEmitter {
     let audioObservers: AudioObservers = new Map(); // TODO: create audio level observer class
     // let audioLevelObservers: types.AudioLevelObserver[] = []; //TODO: create audio level observer class
 
-      // Creating only one router per worker since there is no need for multiple
-      const router = await worker.createRouter({ mediaCodecs });
-      routers.set(router.id, router);
+    // Creating only one router per worker since there is no need for multiple
+    const router = await worker.createRouter({ mediaCodecs });
+    routers.set(router.id, router);
 
-      const audioLevelObserver = await router.createAudioLevelObserver(
-        config.mediasoup.router.audioLevelObserver
-      );
-      audioObservers.set(router.id, {
-        audioLevelObserver,
-        volume: -1000,
-        peerId: null,
-      });
+    const audioLevelObserver = await router.createAudioLevelObserver(
+      config.mediasoup.router.audioLevelObserver
+    );
+    audioObservers.set(router.id, {
+      audioLevelObserver,
+      volume: -1000,
+      peerId: null,
+    });
 
-      const activeSpeakerObserver = await router.createActiveSpeakerObserver();
+    const activeSpeakerObserver = await router.createActiveSpeakerObserver();
 
     return new Room({
       roomId,
@@ -147,7 +148,8 @@ export class Room extends EventEmitter {
     logger.log(
       'Room.log() [roomId:"%s", peersCount: %s]',
       this._roomId,
-      Object.keys(this?._peers).length
+      // Object.keys(this?._peers).length
+      this._peers.size
     );
   }
   // get room
@@ -196,5 +198,4 @@ export class Room extends EventEmitter {
   getPeer(peerId: string) {
     return this._peers.get(peerId);
   }
-
 }

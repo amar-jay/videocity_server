@@ -7,9 +7,10 @@ import WebSocket, { WebSocketServer } from "ws";
 import * as mediasoup from "mediasoup";
 import { isDev } from "./env";
 import { config } from "./lib/config";
-import { logger } from "./lib/logger";
+import { logger } from "./utils/logger";
 import { startMediasoup } from "./lib/worker";
 import { runWebsocket } from "./lib/ws";
+import { analytics } from "./utils/analytics";
 
 let redisClient: ReturnType<typeof redis.createClient>;
 let app: Express;
@@ -98,6 +99,7 @@ function runHTTPserver() {
 }
 
 export async function main() {
+  analytics();
   runHTTPserver();
   startMediasoup()
     .then((workers) => {

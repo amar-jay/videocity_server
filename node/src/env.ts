@@ -1,7 +1,7 @@
 import zod from "zod";
 import os from "os";
 import { get } from "http";
-import { getListenIps } from "./lib/utils";
+import { getListenIps } from "./utils";
 
 const envSchema = zod.object({
   NODE_ENV: zod
