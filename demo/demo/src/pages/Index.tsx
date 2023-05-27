@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 interface IndexProps {
   status?: string;
 }
-function Index({ status }: IndexProps) {
+export function Index({ status }: IndexProps) {
   const [errorText] = useState<string | null>(null);
   const navigate = useNavigate();
   return (

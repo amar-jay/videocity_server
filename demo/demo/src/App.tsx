@@ -1,18 +1,24 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { RouteObject, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Device, types } from "mediasoup-client";
 import "./App.css";
 import { isValidJSON, send } from "./utils";
-import Index from "./pages/Index";
 import { ToastProvider } from "./components/toast";
-import { RouteObject, RouterProvider, createBrowserRouter } from "react-router-dom";
+import Loading from "./components/loading";
+
 import { CopyLink } from "./pages/CopyLink";
-import { Demo } from "./pages/Demo";
 import { Error } from "./pages/Error";
-import { Device, types } from "mediasoup-client";
+import { Index } from "./pages/Index";
+const Demo = React.lazy(() => import("./pages/Demo"))
 
 const events = {
   GET_ROUTER_RTP_CAPABILITIES: "getRouterRtpCapabilities",
 };
+
+
+
+
 
 const connect = async (device: types.Device) => {
   const url = "ws://127.0.0.1:3000/ws?room_id=1234&peer_id=1234";
@@ -103,21 +109,28 @@ function App() {
   const pages = [
     {
       path: "/",
-      element: (() => <Index status={status} />)(),
-    },
+      element:  (
+        <Suspense fallback={<Loading/>}>
+          <Index status={status}/>
+        </Suspense>),
+      },
     {
       path: "/copy-link",
       element: (() => <CopyLink status={status} />)(),
     },
     {
       path: "/demo",
-      element: <Demo />,
+      element:  (
+      <Suspense fallback={<Loading/>}>
+        <Demo/>
+      </Suspense>),
     },
     {
       path: "/error",
       element: <Error />,
     },
   ] as RouteObject[];
+
   pages.map((e) => {
     return {
       ...e,

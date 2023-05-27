@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { enableMicrophone } from "../utils/microphone";
 // import * as Mediasoup from "mediasoup-client";
 
-export function Demo () {
+function Demo () {
   const [devices, setDevices] = useState<string>();
   useEffect(() => {
     // const device = new Mediasoup.Device();
@@ -27,3 +27,5 @@ export function Demo () {
 		</div>
 	)
 }
+
+export default Demo
