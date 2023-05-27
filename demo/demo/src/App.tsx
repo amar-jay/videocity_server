@@ -113,6 +113,10 @@ function App() {
       path: "/demo",
       element: <Demo />,
     },
+    {
+      path: "/error",
+      element: <Error />,
+    },
   ] as const;
   pages.map((e) => {
     return {

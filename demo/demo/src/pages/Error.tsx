@@ -1,10 +1,8 @@
-interface ErrorProps {
-  message: string;
-}
 
 export const Error = (
-  { message }: ErrorProps = { message: "Page not found" }
 ) => {
+
+  const message = new URL(window.location.href).searchParams.get("message") || "page is not present";
   return (
     <div className="flex items-center justify-center gap-3 flex-col">
       <h1>Oops!!</h1>
