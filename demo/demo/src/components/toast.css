@@ -1,11 +1,17 @@
 @import '@radix-ui/colors/slate.css';
 :root {
-  --toast-background: var(--slate7);
+  --toast-background: #1a1a1a;
   --toast-border: var(--slate11);
   --toast-color: var(--slate12);
   --toast-shadow: 0 0 0 1px var(--slate6), 0 4px 16px 0 rgba(0, 0, 0, 0.2);
 }
-
+@media (prefers-color-scheme: light) {
+  :root {
+    --toast-background: #1a1a1a;
+    --toast-border: var(--slate7);
+    --toast-color: var(--slate12);
+  }
+}
 .ToastViewport {
   --viewport-padding: 25px;
   position: fixed;
@@ -28,7 +34,7 @@
   border: 1px solid var(--slate11);
   border-radius: 6px;
   /* box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px; */
-  background-color: #1a1a1a;
+  background-color: var(--toast-background);
   padding: 15px;
   display: grid;
   grid-template-areas: 'title action' 'description action';

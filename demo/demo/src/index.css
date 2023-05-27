@@ -6,6 +6,7 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+  --secondary-color: #1a1a1a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -49,7 +50,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--secondary-color);
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -68,7 +69,7 @@ button:focus-visible {
   font-size: 1.2em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--secondary-color);
   cursor: pointer;
   transition: border-color 0.25s;
   border-color: #646cff;
@@ -80,7 +81,7 @@ button:focus-visible {
   border-radius: 8px;
   display: inline-block;
   padding: 0.6em 1.2em;
-  background-color: #1a1a1a;
+  background-color: var(--secondary-color);
   font-size: small;
 }
 
@@ -91,11 +92,12 @@ button:focus-visible {
   :root {
     color: #213547;
     background-color: #ffffff;
+    --secondary-color: #ccc;
   }
   a:hover {
     color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+    background-color: #999;
   }
 }

@@ -30,7 +30,7 @@ export function CopyLink({ status, }: LinkPageProps) {
 
   useEffect(() => {
 	if (link === "" || !urlPattern.test(link)) {
-		redirect("/error?message=link is absent");
+		redirect("/error?message=link is absent or wrong");
 	}
 	}, [link, redirect, urlPattern]);
 
