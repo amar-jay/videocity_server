@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { isValidJSON, send } from "./utils";
 import Index from "./pages/Index";
-import { CopyLink } from "./pages/CopyLink";
 import { ToastProvider } from "./components/toast";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { CopyLink } from "./pages/CopyLink";
 import { Demo } from "./pages/Demo";
+import { Error } from "./pages/Error";
 import { Device, types } from "mediasoup-client";
 
 const events = {
@@ -37,7 +38,6 @@ const connect = async (device: types.Device) => {
           console.error("cannot produce video");
           return;
         }
-
 
         // const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         // const audioTrack = stream.getAudioTracks()[0];
@@ -82,7 +82,6 @@ function App() {
   const [status, setStatus] = useState<
     "connected" | "not-connected" | string | undefined
   >();
-  
 
   //   const getDevice = useCallback(async () => {
   // 	try {
@@ -101,11 +100,10 @@ function App() {
       setStatus("connected");
     });
   }, []);
-  const router = createBrowserRouter([
+  const pages = [
     {
       path: "/",
       element: (() => <Index status={status} />)(),
-
     },
     {
       path: "/copy-link",
@@ -113,17 +111,22 @@ function App() {
     },
     {
       path: "/demo",
-      element: <Demo/>,
-    }
-  ]);
-
-
+      element: <Demo />,
+    },
+  ] as const;
+  pages.map((e) => {
+    return {
+      ...e,
+      errorElement: <Error />,
+    };
+  });
+  const router = createBrowserRouter(pages);
 
   return (
     <ToastProvider>
       <RouterProvider router={router} />
     </ToastProvider>
-  )
+  );
 }
 
 export default App;
