@@ -1,8 +1,7 @@
-import React from "react";
-
 interface ErrorProps {
   message: string;
 }
+
 export const Error = (
   { message }: ErrorProps = { message: "Page not found" }
 ) => {
