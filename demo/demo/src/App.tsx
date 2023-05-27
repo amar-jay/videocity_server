@@ -4,7 +4,7 @@ import "./App.css";
 import { isValidJSON, send } from "./utils";
 import Index from "./pages/Index";
 import { ToastProvider } from "./components/toast";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouteObject, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { CopyLink } from "./pages/CopyLink";
 import { Demo } from "./pages/Demo";
 import { Error } from "./pages/Error";
@@ -117,7 +117,7 @@ function App() {
       path: "/error",
       element: <Error />,
     },
-  ] as const;
+  ] as RouteObject[];
   pages.map((e) => {
     return {
       ...e,
